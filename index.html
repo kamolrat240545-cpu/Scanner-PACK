@@ -229,9 +229,7 @@
   <h1>📦 ระบบสแกน Barcode</h1>
 
 
-  <!-- =====================================================
-       เลือกพนักงาน
-       ===================================================== -->
+  <!-- เลือกพนักงาน -->
 
   <div class="card">
 
@@ -414,9 +412,7 @@
   </div>
 
 
-  <!-- =====================================================
-       กล้อง
-       ===================================================== -->
+  <!-- กล้อง -->
 
   <div class="card">
 
@@ -462,9 +458,7 @@
   </div>
 
 
-  <!-- =====================================================
-       กรอก Barcode เอง
-       ===================================================== -->
+  <!-- กรอก Barcode เอง -->
 
   <div class="card">
 
@@ -481,9 +475,7 @@
   </div>
 
 
-  <!-- =====================================================
-       ปุ่มบันทึก
-       ===================================================== -->
+  <!-- ปุ่มบันทึก -->
 
   <div class="card">
 
@@ -498,17 +490,13 @@
   </div>
 
 
-  <!-- สถานะ -->
-
   <div
     id="status"
     class="status">
   </div>
 
 
-  <!-- =====================================================
-       ประวัติ
-       ===================================================== -->
+  <!-- ประวัติ -->
 
   <div class="card">
 
@@ -532,11 +520,11 @@
 <script>
 
   // =========================================================
-  // Google Apps Script Web App
+  // URL Google Apps Script ตัวใหม่
   // =========================================================
 
   const WEB_APP_URL =
-    "https://script.google.com/macros/s/AKfycbyJhGYBitY8axfA7PDnWLs7f2A3hZsbb8362Bunp0aKWQ_0BJt2HshfvERH3EO_RZ60/exec";
+    "https://script.google.com/macros/s/AKfycbzXIi3TNDlc3vwv4dDdJcKMtDPWzwNtXp4G2U77FhE0kDJcBUwG-RVLQx08FnOrGW5C/exec";
 
 
   // =========================================================
@@ -555,7 +543,7 @@
 
 
   // =========================================================
-  // Element ต่าง ๆ
+  // Element
   // =========================================================
 
   const employeeEl =
@@ -581,7 +569,7 @@
 
 
   // =========================================================
-  // แสดงชื่อเล่น
+  // ชื่อเล่น
   // =========================================================
 
   employeeEl.addEventListener(
@@ -613,7 +601,8 @@
 
   function showStatus(message, type) {
 
-    statusEl.textContent = message;
+    statusEl.textContent =
+      message;
 
     statusEl.className =
       "status " + (type || "");
@@ -627,9 +616,7 @@
 
   function checkZXing() {
 
-    if (
-      !window.ZXingBrowser
-    ) {
+    if (!window.ZXingBrowser) {
 
       showStatus(
         "❌ โหลดระบบกล้องไม่สำเร็จ กรุณารีเฟรชหน้าเว็บ",
@@ -665,13 +652,9 @@
       );
 
 
-      // สร้างตัวอ่าน Barcode
-
       codeReader =
         new ZXingBrowser.BrowserMultiFormatReader();
 
-
-      // หาอุปกรณ์กล้อง
 
       const devices =
         await ZXingBrowser.BrowserCodeReader
@@ -689,9 +672,7 @@
       }
 
 
-      // =====================================================
       // เลือกกล้องหลัง
-      // =====================================================
 
       const rearCamera =
         devices.find(
@@ -716,12 +697,10 @@
       selectedDeviceId =
         rearCamera
           ? rearCamera.deviceId
-          : devices[devices.length - 1].deviceId;
+          : devices[
+              devices.length - 1
+            ].deviceId;
 
-
-      // =====================================================
-      // สร้าง video
-      // =====================================================
 
       readerEl.innerHTML =
         '<video id="video" playsinline></video>';
@@ -730,10 +709,6 @@
       const videoEl =
         document.getElementById("video");
 
-
-      // =====================================================
-      // เริ่มอ่าน Barcode
-      // =====================================================
 
       await codeReader.decodeFromVideoDevice(
 
@@ -748,12 +723,9 @@
             const text =
               result.getText().trim();
 
-
             const now =
               Date.now();
 
-
-            // ป้องกันการสแกนซ้ำ
 
             if (
               text &&
@@ -770,19 +742,16 @@
                 now;
 
 
-              // ใส่ Barcode ลงช่อง
-
               barcodeEl.value =
                 text;
 
 
               showStatus(
-                "✅ อ่าน Barcode ได้แล้ว: " + text,
+                "✅ อ่าน Barcode ได้แล้ว: " +
+                text,
                 "success"
               );
 
-
-              // หยุดกล้องหลังอ่านสำเร็จ
 
               stopCamera();
 
@@ -812,7 +781,6 @@
     catch (err) {
 
       console.error(err);
-
 
       cameraRunning = false;
 
@@ -882,9 +850,7 @@
     try {
 
       if (codeReader) {
-
         codeReader.reset();
-
       }
 
     }
@@ -905,15 +871,11 @@
   }
 
 
-  // ปุ่มเปิดกล้อง
-
   startBtn.addEventListener(
     "click",
     startCamera
   );
 
-
-  // ปุ่มหยุดกล้อง
 
   stopBtn.addEventListener(
     "click",
@@ -923,7 +885,6 @@
 
   // =========================================================
   // JSONP
-  // ใช้ติดต่อ Google Apps Script จาก GitHub Pages
   // =========================================================
 
   function jsonp(
@@ -1075,7 +1036,7 @@
 
 
   // =========================================================
-  // บันทึก Barcode
+  // บันทึกลง Google Sheet
   // =========================================================
 
   async function saveScan() {
@@ -1083,12 +1044,9 @@
     const employeeValue =
       employeeEl.value;
 
-
     const barcode =
       barcodeEl.value.trim();
 
-
-    // ตรวจสอบพนักงาน
 
     if (!employeeValue) {
 
@@ -1103,8 +1061,6 @@
     }
 
 
-    // ตรวจสอบ Barcode
-
     if (!barcode) {
 
       showStatus(
@@ -1117,8 +1073,6 @@
       return;
     }
 
-
-    // แยกชื่อจริง / ชื่อเล่น
 
     const parts =
       employeeValue.split("|");
@@ -1152,7 +1106,8 @@
       const data =
         await jsonp({
 
-          action: "save",
+          action:
+            "save",
 
           fullName:
             fullName,
@@ -1225,7 +1180,6 @@
 
       console.error(err);
 
-
       showStatus(
         "❌ บันทึกไม่สำเร็จ: " +
         err.message,
@@ -1244,8 +1198,6 @@
   }
 
 
-  // ปุ่มบันทึก
-
   document
     .getElementById("saveButton")
     .addEventListener(
@@ -1255,7 +1207,7 @@
 
 
   // =========================================================
-  // กด Enter เพื่อบันทึก
+  // กด Enter ในช่อง Barcode
   // =========================================================
 
   barcodeEl.addEventListener(
@@ -1277,7 +1229,7 @@
 
 
   // =========================================================
-  // โหลดประวัติ
+  // โหลดรายการล่าสุด
   // =========================================================
 
   async function loadHistory() {
@@ -1315,9 +1267,7 @@
             );
 
 
-      if (
-        !rows.length
-      ) {
+      if (!rows.length) {
 
         historyEl.innerHTML =
           '<div class="empty">ยังไม่มีรายการสแกน</div>';
@@ -1419,7 +1369,6 @@
 
       console.error(err);
 
-
       historyEl.innerHTML =
         '<div class="empty">ไม่สามารถโหลดรายการล่าสุดได้</div>';
 
@@ -1429,7 +1378,7 @@
 
 
   // =========================================================
-  // ป้องกัน HTML แปลก ๆ
+  // ป้องกัน HTML
   // =========================================================
 
   function escapeHtml(value) {
@@ -1465,7 +1414,7 @@
 
 
   // =========================================================
-  // โหลดประวัติทันที
+  // โหลดประวัติเมื่อเปิดเว็บ
   // =========================================================
 
   loadHistory();

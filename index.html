@@ -10,23 +10,49 @@
     content="width=device-width, initial-scale=1.0"
   >
 
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+  >
+
   <title>ระบบสแกน Barcode</title>
 
 
-  <!-- ZXing Barcode Scanner -->
-  <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js"></script>
+  <!-- ==================================================
+       ZXing Barcode Scanner
+       ================================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js">
+  </script>
 
 
   <style>
+
+    /* ==================================================
+       พื้นฐาน
+       ================================================== */
 
     * {
       box-sizing: border-box;
     }
 
 
+    html,
     body {
       margin: 0;
-      padding: 15px;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+
+    body {
 
       font-family:
         Arial,
@@ -36,290 +62,551 @@
       background: #f5f5f5;
 
       color: #111;
+
+      padding:
+        10px;
     }
 
 
+    /* ==================================================
+       กล่องหลัก
+       ================================================== */
+
     .container {
+
       width: 100%;
-      max-width: 700px;
 
-      margin: 0 auto;
+      max-width: 760px;
 
-      background: #fff;
+      margin:
+        0 auto;
 
-      padding: 20px;
+      background: #ffffff;
 
-      border-radius: 18px;
+      padding:
+        20px;
+
+      border-radius:
+        18px;
 
       box-shadow:
         0 3px 15px rgba(0,0,0,0.12);
+
     }
 
+
+    /* ==================================================
+       หัวข้อ
+       ================================================== */
 
     h1 {
+
       text-align: center;
 
-      margin-top: 0;
-      margin-bottom: 25px;
+      margin:
+        5px 0 25px 0;
 
-      font-size: 30px;
+      font-size:
+        30px;
+
+      line-height:
+        1.3;
+
     }
 
+
+    /* ==================================================
+       Label
+       ================================================== */
 
     label {
+
       display: block;
 
-      margin-top: 18px;
-      margin-bottom: 7px;
+      margin-top:
+        18px;
 
-      font-size: 19px;
-      font-weight: bold;
+      margin-bottom:
+        8px;
+
+      font-size:
+        19px;
+
+      font-weight:
+        bold;
+
     }
 
+
+    /* ==================================================
+       Input / Select
+       ================================================== */
 
     select,
     input {
+
       width: 100%;
 
-      height: 58px;
+      height:
+        60px;
 
-      padding: 10px 16px;
+      padding:
+        10px 16px;
 
-      border: 1px solid #ccc;
+      border:
+        1px solid #cccccc;
 
-      border-radius: 12px;
+      border-radius:
+        13px;
 
-      font-size: 18px;
+      font-size:
+        18px;
 
-      background: #fff;
+      font-family:
+        Arial,
+        "Noto Sans Thai",
+        sans-serif;
+
+      outline:
+        none;
+
+      background:
+        #ffffff;
+
+    }
+
+
+    select:focus,
+    input:focus {
+
+      border-color:
+        #1976d2;
+
     }
 
 
     input[readonly] {
-      background: #f1f1f1;
+
+      background:
+        #f1f1f1;
+
+      color:
+        #222;
+
     }
 
 
+    /* ==================================================
+       ปุ่ม
+       ================================================== */
+
     button {
-      width: 100%;
 
-      height: 60px;
+      width:
+        100%;
 
-      margin-top: 15px;
+      min-height:
+        60px;
 
-      border: none;
+      margin-top:
+        15px;
 
-      border-radius: 12px;
+      padding:
+        10px 15px;
 
-      color: white;
+      border:
+        none;
 
-      font-size: 19px;
+      border-radius:
+        13px;
 
-      font-weight: bold;
+      color:
+        #ffffff;
 
-      cursor: pointer;
+      font-size:
+        19px;
+
+      font-weight:
+        bold;
+
+      font-family:
+        Arial,
+        "Noto Sans Thai",
+        sans-serif;
+
+      cursor:
+        pointer;
+
+      -webkit-tap-highlight-color:
+        transparent;
+
+    }
+
+
+    button:active {
+
+      transform:
+        scale(0.99);
+
     }
 
 
     button:disabled {
-      opacity: 0.6;
 
-      cursor: not-allowed;
+      opacity:
+        0.6;
+
+      cursor:
+        not-allowed;
+
     }
 
+
+    /* ==================================================
+       ปุ่มเปิดกล้อง
+       ================================================== */
 
     #cameraButton {
-      background: #1976d2;
+
+      background:
+        #1976d2;
+
     }
 
+
+    /* ==================================================
+       ปุ่มปิดกล้อง
+       ================================================== */
 
     #stopCamera {
-      background: #d32f2f;
+
+      background:
+        #d32f2f;
+
     }
 
+
+    /* ==================================================
+       ปุ่มบันทึก
+       ================================================== */
 
     #saveButton {
-      background: #2e7d32;
 
-      margin-top: 20px;
+      background:
+        #2e7d32;
+
+      margin-top:
+        20px;
+
     }
 
 
-    /* ======================================
-       กล้อง
-       ====================================== */
+    /* ==================================================
+       กล่องกล้อง
+       ================================================== */
 
     #cameraBox {
-      display: none;
 
-      width: 100%;
+      display:
+        none;
 
-      margin-top: 15px;
+      width:
+        100%;
 
-      background: #000;
+      margin-top:
+        15px;
 
-      border-radius: 12px;
+      background:
+        #000000;
 
-      overflow: hidden;
+      border-radius:
+        14px;
 
-      position: relative;
+      overflow:
+        hidden;
+
+      position:
+        relative;
+
     }
 
+
+    /* ==================================================
+       Video
+       ================================================== */
 
     #video {
-      display: block;
 
-      width: 100%;
+      display:
+        block;
 
-      height: auto;
+      width:
+        100%;
 
-      min-height: 250px;
+      height:
+        auto;
 
-      background: #000;
+      min-height:
+        280px;
 
-      object-fit: cover;
+      max-height:
+        600px;
+
+      background:
+        #000000;
+
+      object-fit:
+        cover;
+
+      transform:
+        translateZ(0);
+
     }
 
 
-    /* ======================================
-       แจ้งเตือน
-       ====================================== */
+    /* ==================================================
+       ข้อความสถานะ
+       ================================================== */
 
     #message {
-      display: none;
 
-      margin-top: 18px;
+      display:
+        none;
 
-      padding: 16px;
+      margin-top:
+        18px;
 
-      border-radius: 12px;
+      padding:
+        16px;
 
-      text-align: center;
+      border-radius:
+        13px;
 
-      font-size: 18px;
+      text-align:
+        center;
 
-      font-weight: bold;
+      font-size:
+        18px;
 
-      line-height: 1.5;
+      font-weight:
+        bold;
 
-      word-break: break-word;
+      line-height:
+        1.5;
+
+      word-break:
+        break-word;
+
     }
 
 
     #message.success {
-      display: block;
 
-      background: #dcfce7;
+      display:
+        block;
 
-      color: #166534;
+      background:
+        #dcfce7;
+
+      color:
+        #166534;
+
     }
 
 
     #message.error {
-      display: block;
 
-      background: #fee2e2;
+      display:
+        block;
 
-      color: #991b1b;
+      background:
+        #fee2e2;
+
+      color:
+        #991b1b;
+
     }
 
 
     #message.warning {
-      display: block;
 
-      background: #fff3cd;
+      display:
+        block;
 
-      color: #856404;
+      background:
+        #fff3cd;
+
+      color:
+        #856404;
+
+      border:
+        2px solid #f0ad4e;
+
     }
 
 
-    /* ======================================
+    /* ==================================================
        ประวัติ
-       ====================================== */
+       ================================================== */
 
     .history-title {
-      margin-top: 30px;
 
-      margin-bottom: 12px;
+      margin-top:
+        32px;
 
-      font-size: 25px;
+      margin-bottom:
+        12px;
+
+      font-size:
+        27px;
+
+    }
+
+
+    #historyList {
+
+      width:
+        100%;
+
     }
 
 
     .history-item {
-      padding: 14px;
 
-      margin-top: 10px;
+      padding:
+        15px;
 
-      border: 1px solid #ddd;
+      margin-top:
+        10px;
 
-      border-radius: 10px;
+      border:
+        1px solid #dddddd;
 
-      background: #fafafa;
+      border-radius:
+        12px;
+
+      background:
+        #fafafa;
+
     }
 
 
     .history-barcode {
-      font-size: 18px;
 
-      font-weight: bold;
+      font-size:
+        19px;
 
-      word-break: break-all;
+      font-weight:
+        bold;
+
+      word-break:
+        break-all;
+
     }
 
 
     .history-name {
-      margin-top: 6px;
 
-      font-size: 16px;
+      margin-top:
+        7px;
+
+      font-size:
+        17px;
+
     }
 
 
     .history-time {
-      margin-top: 5px;
 
-      color: #666;
+      margin-top:
+        5px;
 
-      font-size: 14px;
+      color:
+        #666666;
+
+      font-size:
+        14px;
+
     }
 
 
     .empty {
-      text-align: center;
 
-      color: #777;
+      text-align:
+        center;
 
-      padding: 20px;
+      color:
+        #777777;
+
+      padding:
+        20px;
+
     }
 
+
+    /* ==================================================
+       มือถือ
+       ================================================== */
 
     @media (max-width: 600px) {
 
       body {
-        padding: 8px;
+
+        padding:
+          5px;
+
       }
 
 
       .container {
-        padding: 16px;
 
-        border-radius: 12px;
+        padding:
+          15px;
+
+        border-radius:
+          12px;
+
       }
 
 
       h1 {
-        font-size: 25px;
+
+        font-size:
+          26px;
+
       }
 
 
       label {
-        font-size: 18px;
+
+        font-size:
+          18px;
+
       }
 
 
       select,
       input {
-        font-size: 17px;
+
+        font-size:
+          17px;
+
+      }
+
+
+      button {
+
+        font-size:
+          19px;
+
+      }
+
+
+      #video {
+
+        min-height:
+          260px;
+
       }
 
     }
@@ -335,18 +622,18 @@
 <div class="container">
 
 
-  <!-- ======================================
+  <!-- ==================================================
        หัวข้อ
-       ====================================== -->
+       ================================================== -->
 
   <h1>
     📦 ระบบสแกน Barcode
   </h1>
 
 
-  <!-- ======================================
+  <!-- ==================================================
        เลือกพนักงาน
-       ====================================== -->
+       ================================================== -->
 
   <label for="employee">
     เลือกพนักงาน
@@ -362,9 +649,9 @@
   </select>
 
 
-  <!-- ======================================
+  <!-- ==================================================
        ชื่อจริง
-       ====================================== -->
+       ================================================== -->
 
   <label for="fullName">
     ชื่อจริง
@@ -378,9 +665,9 @@
   >
 
 
-  <!-- ======================================
+  <!-- ==================================================
        ชื่อเล่น
-       ====================================== -->
+       ================================================== -->
 
   <label for="nickname">
     ชื่อเล่น
@@ -394,9 +681,9 @@
   >
 
 
-  <!-- ======================================
+  <!-- ==================================================
        Barcode
-       ====================================== -->
+       ================================================== -->
 
   <label for="barcode">
     เลขพัสดุ
@@ -413,9 +700,9 @@
   >
 
 
-  <!-- ======================================
+  <!-- ==================================================
        เปิดกล้อง
-       ====================================== -->
+       ================================================== -->
 
   <button
     id="cameraButton"
@@ -425,25 +712,26 @@
   </button>
 
 
-  <!-- ======================================
+  <!-- ==================================================
        กล้อง
-       ====================================== -->
+       ================================================== -->
 
   <div id="cameraBox">
 
     <video
       id="video"
       playsinline
-      muted
+      webkit-playsinline
       autoplay
+      muted
     ></video>
 
   </div>
 
 
-  <!-- ======================================
+  <!-- ==================================================
        ปิดกล้อง
-       ====================================== -->
+       ================================================== -->
 
   <button
     id="stopCamera"
@@ -453,9 +741,9 @@
   </button>
 
 
-  <!-- ======================================
+  <!-- ==================================================
        บันทึก
-       ====================================== -->
+       ================================================== -->
 
   <button
     id="saveButton"
@@ -465,16 +753,16 @@
   </button>
 
 
-  <!-- ======================================
+  <!-- ==================================================
        แจ้งเตือน
-       ====================================== -->
+       ================================================== -->
 
   <div id="message"></div>
 
 
-  <!-- ======================================
+  <!-- ==================================================
        ประวัติ
-       ====================================== -->
+       ================================================== -->
 
   <h2 class="history-title">
     ประวัติการสแกน
@@ -498,7 +786,7 @@
 
 
 // =====================================================
-// Apps Script URL
+// URL ของ Apps Script
 // =====================================================
 
 const WEB_APP_URL =
@@ -506,90 +794,210 @@ const WEB_APP_URL =
 
 
 // =====================================================
-// รายชื่อพนักงาน 40 คน
+// รายชื่อพนักงาน
 // =====================================================
 
 const employees = [
 
-  ["จุรีพร สุขพิพัฒน์", "เฟิร์น"],
+  [
+    "จุรีพร สุขพิพัฒน์",
+    "เฟิร์น"
+  ],
 
-  ["วันวิสา เจริญโสภณ", "ปาร์ตี้"],
+  [
+    "วันวิสา เจริญโสภณ",
+    "ปาร์ตี้"
+  ],
 
-  ["ธัญวรัตน์ บุญวังทอง", "โม"],
+  [
+    "ธัญวรัตน์ บุญวังทอง",
+    "โม"
+  ],
 
-  ["กัลย์สุดา บุญยืน", "แก้ว"],
+  [
+    "กัลย์สุดา บุญยืน",
+    "แก้ว"
+  ],
 
-  ["SAW MYINT HTUN", "ซอมี่"],
+  [
+    "SAW MYINT HTUN",
+    "ซอมี่"
+  ],
 
-  ["ทิฆัมพร ละเอียด", "แนน"],
+  [
+    "ทิฆัมพร ละเอียด",
+    "แนน"
+  ],
 
-  ["เจต มานะพิมพ์", "เจต"],
+  [
+    "เจต มานะพิมพ์",
+    "เจต"
+  ],
 
-  ["น้ำผึ้ง วรรณชิโนรส", "ผึ้ง"],
+  [
+    "น้ำผึ้ง วรรณชิโนรส",
+    "ผึ้ง"
+  ],
 
-  ["HTOO", "ทู"],
+  [
+    "HTOO",
+    "ทู"
+  ],
 
-  ["SAW DEN", "แดน"],
+  [
+    "SAW DEN",
+    "แดน"
+  ],
 
-  ["น้ำฝน ยังเอี่ยม", "ฝน"],
+  [
+    "น้ำฝน ยังเอี่ยม",
+    "ฝน"
+  ],
 
-  ["MIN CHIT SOE", "มิน ชิท ซู"],
+  [
+    "MIN CHIT SOE",
+    "มิน ชิท ซู"
+  ],
 
-  ["SAW MU (2)", "ซอมู"],
+  [
+    "SAW MU (2)",
+    "ซอมู"
+  ],
 
-  ["ZAYAR MYLNT", "ซี ยา มิ"],
+  [
+    "ZAYAR MYLNT",
+    "ซี ยา มิ"
+  ],
 
-  ["EH POE SAI", "อิ โป ซาย"],
+  [
+    "EH POE SAI",
+    "อิ โป ซาย"
+  ],
 
-  ["SAW SHEE", "ซอชิ"],
+  [
+    "SAW SHEE",
+    "ซอชิ"
+  ],
 
-  ["SOE WIN", "บ่าววี"],
+  [
+    "SOE WIN",
+    "บ่าววี"
+  ],
 
-  ["SAW TAR SI PAR", "วิททูล"],
+  [
+    "SAW TAR SI PAR",
+    "วิททูล"
+  ],
 
-  ["KYAW WIN NAING", "วินัย"],
+  [
+    "KYAW WIN NAING",
+    "วินัย"
+  ],
 
-  ["SAW MU (1)", "ซอมู"],
+  [
+    "SAW MU (1)",
+    "ซอมู"
+  ],
 
-  ["ชลิตา จกัลยา", "ติ๊ก"],
+  [
+    "ชลิตา จกัลยา",
+    "ติ๊ก"
+  ],
 
-  ["MYINT OO", "มิอู"],
+  [
+    "MYINT OO",
+    "มิอู"
+  ],
 
-  ["KAR KAR", "กา กา"],
+  [
+    "KAR KAR",
+    "กา กา"
+  ],
 
-  ["อมรรัตน์ เรืองลอยขำ", "อ้อย"],
+  [
+    "อมรรัตน์ เรืองลอยขำ",
+    "อ้อย"
+  ],
 
-  ["วิไลรัตน์ แก้วพิกุล", "จุ๊"],
+  [
+    "วิไลรัตน์ แก้วพิกุล",
+    "จุ๊"
+  ],
 
-  ["วันดี ยิ้มกัลป์", "ดาว"],
+  [
+    "วันดี ยิ้มกัลป์",
+    "ดาว"
+  ],
 
-  ["LAY LAY", "เล"],
+  [
+    "LAY LAY",
+    "เล"
+  ],
 
-  ["THET HTAR AYE", "เอ"],
+  [
+    "THET HTAR AYE",
+    "เอ"
+  ],
 
-  ["SOE MIN OO", ""],
+  [
+    "SOE MIN OO",
+    ""
+  ],
 
-  ["จีราวัฒน์ อ้อนวอน", "บาส"],
+  [
+    "จีราวัฒน์ อ้อนวอน",
+    "บาส"
+  ],
 
-  ["เอื้องแก้ว ธีรัชธรรมสรณ์", "เอ็ม"],
+  [
+    "เอื้องแก้ว ธีรัชธรรมสรณ์",
+    "เอ็ม"
+  ],
 
-  ["HAN PHYO WAI", "เว"],
+  [
+    "HAN PHYO WAI",
+    "เว"
+  ],
 
-  ["อารี สูงขาว", "นุ้ย"],
+  [
+    "อารี สูงขาว",
+    "นุ้ย"
+  ],
 
-  ["YIN MAR NWAI", "มาญ"],
+  [
+    "YIN MAR NWAI",
+    "มาญ"
+  ],
 
-  ["SAW SHWE OESI", "พี่แว่น"],
+  [
+    "SAW SHWE OESI",
+    "พี่แว่น"
+  ],
 
-  ["หนูไกร อำภัยรัตน์", "ไกร"],
+  [
+    "หนูไกร อำภัยรัตน์",
+    "ไกร"
+  ],
 
-  ["ปวีณา หลอดทอง", "วี"],
+  [
+    "ปวีณา หลอดทอง",
+    "วี"
+  ],
 
-  ["นันทญา แสงทอง", "นัน"],
+  [
+    "นันทญา แสงทอง",
+    "นัน"
+  ],
 
-  ["วันวิสา ลัภขุนทด", "กิ่ง"],
+  [
+    "วันวิสา ลัภขุนทด",
+    "กิ่ง"
+  ],
 
-  ["SAW MOE LAY", "โม เล"]
+  [
+    "SAW MOE LAY",
+    "โม เล"
+  ]
 
 ];
 
@@ -598,13 +1006,20 @@ const employees = [
 // ตัวแปรกล้อง
 // =====================================================
 
-let codeReader = null;
+let codeReader =
+  null;
 
-let cameraControls = null;
 
-let cameraStarting = false;
+let cameraControls =
+  null;
 
-let scanHandled = false;
+
+let cameraStarting =
+  false;
+
+
+let scanHandled =
+  false;
 
 
 // =====================================================
@@ -678,7 +1093,7 @@ const historyList =
 
 
 // =====================================================
-// ใส่รายชื่อพนักงาน
+// ใส่รายชื่อพนักงานลง Select
 // =====================================================
 
 employees.forEach(
@@ -710,7 +1125,7 @@ employees.forEach(
 
 
 // =====================================================
-// เลือกพนักงาน
+// เมื่อเลือกพนักงาน
 // =====================================================
 
 employeeSelect.addEventListener(
@@ -735,7 +1150,22 @@ employeeSelect.addEventListener(
 
 
     const person =
-      employees[index];
+      employees[
+        Number(index)
+      ];
+
+
+    if (!person) {
+
+      fullNameInput.value =
+        "";
+
+      nicknameInput.value =
+        "";
+
+      return;
+
+    }
 
 
     fullNameInput.value =
@@ -751,7 +1181,6 @@ employeeSelect.addEventListener(
 
 // =====================================================
 // JSONP
-// GitHub → Apps Script
 // =====================================================
 
 function callAppsScript(
@@ -792,6 +1221,9 @@ function callAppsScript(
             timeoutId
           );
 
+          timeoutId =
+            null;
+
         }
 
 
@@ -801,7 +1233,7 @@ function callAppsScript(
             callbackName
           ];
 
-        } catch (e) {
+        } catch (error) {
 
           window[
             callbackName
@@ -828,17 +1260,22 @@ function callAppsScript(
         function(data) {
 
           if (finished) {
+
             return;
+
           }
 
 
-          finished = true;
+          finished =
+            true;
 
 
           cleanup();
 
 
-          resolve(data);
+          resolve(
+            data
+          );
 
         };
 
@@ -870,15 +1307,22 @@ function callAppsScript(
         query.toString();
 
 
+      script.async =
+        true;
+
+
       script.onerror =
         function() {
 
           if (finished) {
+
             return;
+
           }
 
 
-          finished = true;
+          finished =
+            true;
 
 
           cleanup();
@@ -903,11 +1347,14 @@ function callAppsScript(
           function() {
 
             if (finished) {
+
               return;
+
             }
 
 
-            finished = true;
+            finished =
+              true;
 
 
             cleanup();
@@ -981,8 +1428,23 @@ async function checkBarcodeImmediately(
     }
 
 
-    return false;
+    if (
+      result &&
+      result.success === false
+    ) {
 
+      console.error(
+        "Check error:",
+        result.message
+      );
+
+
+      return false;
+
+    }
+
+
+    return false;
 
   } catch (error) {
 
@@ -1007,7 +1469,7 @@ async function checkBarcodeImmediately(
 
 
 // =====================================================
-// เปิดกล้อง
+// ปุ่มเปิดกล้อง
 // =====================================================
 
 cameraButton.addEventListener(
@@ -1016,9 +1478,16 @@ cameraButton.addEventListener(
 );
 
 
+// =====================================================
+// เปิดกล้อง
+// =====================================================
+
 async function startCamera() {
 
-  // ป้องกันกดเปิดกล้องซ้ำหลายครั้ง
+  // ---------------------------------------------------
+  // ป้องกันกดเปิดซ้ำระหว่างกำลังเปิด
+  // ---------------------------------------------------
+
   if (cameraStarting) {
 
     return;
@@ -1030,22 +1499,27 @@ async function startCamera() {
     true;
 
 
-  // ===================================================
-  // เปิดกล้องใหม่ = ล้างข้อความแจ้งเตือนเก่า
-  // ===================================================
+  // ---------------------------------------------------
+  // เปิดกล้องใหม่ = ล้างข้อความเก่า
+  // ---------------------------------------------------
 
   clearMessage();
 
 
-  // ===================================================
-  // ปิดกล้องเก่าให้หมดก่อน
-  // ===================================================
+  // ---------------------------------------------------
+  // ปิดกล้องเก่าให้หมด
+  // ---------------------------------------------------
 
   stopCamera();
 
 
-  // รอให้กล้องเก่าปิดสมบูรณ์
-  await wait(500);
+  // ---------------------------------------------------
+  // รอให้ iPhone ปล่อยกล้องเก่า
+  // ---------------------------------------------------
+
+  await wait(
+    800
+  );
 
 
   scanHandled =
@@ -1053,6 +1527,10 @@ async function startCamera() {
 
 
   try {
+
+    // -------------------------------------------------
+    // ตรวจ ZXing
+    // -------------------------------------------------
 
     if (
       !window.ZXingBrowser
@@ -1065,102 +1543,109 @@ async function startCamera() {
     }
 
 
-    // =================================================
+    // -------------------------------------------------
+    // แสดงกล่องกล้อง
+    // -------------------------------------------------
+
+    cameraBox.style.display =
+      "block";
+
+
+    // -------------------------------------------------
     // สร้าง Reader ใหม่ทุกครั้ง
-    // =================================================
+    // -------------------------------------------------
 
     codeReader =
       new ZXingBrowser
         .BrowserMultiFormatReader();
 
 
-    // =================================================
-    // ขอรายการกล้อง
-    // =================================================
+    // -------------------------------------------------
+    // ล้าง Video ก่อนเปิดใหม่
+    // -------------------------------------------------
 
-    const devices =
-      await ZXingBrowser
-        .BrowserCodeReader
-        .listVideoInputDevices();
+    try {
 
+      video.pause();
 
-    if (
-      !devices ||
-      devices.length === 0
-    ) {
+      video.srcObject =
+        null;
 
-      throw new Error(
-        "ไม่พบกล้อง"
+      video.removeAttribute(
+        "src"
+      );
+
+      video.load();
+
+    } catch (error) {
+
+      console.log(
+        "Video prepare:",
+        error
       );
 
     }
 
 
-    // =================================================
-    // เลือกกล้องหลัง
-    // =================================================
+    // -------------------------------------------------
+    // ข้อกำหนดกล้อง
+    // ใช้กล้องหลัง
+    // -------------------------------------------------
 
-    let deviceId =
-      devices[
-        devices.length - 1
-      ].deviceId;
+    const constraints = {
 
+      audio:
+        false,
 
-    // ถ้ามีหลายกล้อง พยายามเลือกกล้องหลัง
-    for (
-      let i = 0;
-      i < devices.length;
-      i++
-    ) {
+      video: {
 
-      const label =
-        (
-          devices[i].label ||
-          ""
-        ).toLowerCase();
+        facingMode: {
 
+          ideal:
+            "environment"
 
-      if (
-        label.includes("back") ||
-        label.includes("rear") ||
-        label.includes("environment")
-      ) {
+        },
 
-        deviceId =
-          devices[i].deviceId;
+        width: {
 
-        break;
+          ideal:
+            1280
+
+        },
+
+        height: {
+
+          ideal:
+            720
+
+        }
 
       }
 
-    }
+    };
 
 
-    // =================================================
-    // เปิดพื้นที่กล้อง
-    // =================================================
-
-    cameraBox.style.display =
-      "block";
-
-
-    // =================================================
-    // เริ่มกล้อง
-    // =================================================
+    // -------------------------------------------------
+    // เปิดกล้อง
+    // -------------------------------------------------
 
     cameraControls =
       await codeReader
-        .decodeFromVideoDevice(
+        .decodeFromConstraints(
 
-          deviceId,
+          constraints,
 
           video,
 
           async function(
-            result
+            result,
+            error
           ) {
 
-            // ไม่มีผลลัพธ์
+            // -----------------------------------------
+            // ยังไม่มี Barcode
+            // -----------------------------------------
+
             if (!result) {
 
               return;
@@ -1168,7 +1653,10 @@ async function startCamera() {
             }
 
 
-            // ป้องกันสแกนซ้ำจากเฟรมเดียวกัน
+            // -----------------------------------------
+            // ป้องกัน callback ซ้ำ
+            // -----------------------------------------
+
             if (scanHandled) {
 
               return;
@@ -1180,13 +1668,14 @@ async function startCamera() {
               true;
 
 
-            // =================================================
+            // -----------------------------------------
             // อ่าน Barcode
-            // =================================================
+            // -----------------------------------------
 
             const code =
               String(
-                result.getText() || ""
+                result.getText() ||
+                ""
               ).trim();
 
 
@@ -1200,24 +1689,24 @@ async function startCamera() {
             }
 
 
-            // =================================================
-            // ใส่ Barcode ลงช่อง
-            // =================================================
+            // -----------------------------------------
+            // ใส่ Barcode ในช่อง
+            // -----------------------------------------
 
             barcodeInput.value =
               code;
 
 
-            // =================================================
+            // -----------------------------------------
             // หยุดกล้องทันที
-            // =================================================
+            // -----------------------------------------
 
             stopCamera();
 
 
-            // =================================================
-            // เช็ก Barcode ซ้ำทันที
-            // =================================================
+            // -----------------------------------------
+            // เช็กซ้ำทันที
+            // -----------------------------------------
 
             const duplicate =
               await checkBarcodeImmediately(
@@ -1225,9 +1714,9 @@ async function startCamera() {
               );
 
 
-            // =================================================
+            // -----------------------------------------
             // ถ้าไม่ซ้ำ
-            // =================================================
+            // -----------------------------------------
 
             if (!duplicate) {
 
@@ -1244,26 +1733,165 @@ async function startCamera() {
         );
 
 
-    // =================================================
-    // รอให้ video พร้อม
-    // =================================================
+    // -------------------------------------------------
+    // พยายามตั้ง Autofocus
+    // -------------------------------------------------
+
+    await wait(
+      700
+    );
+
 
     try {
 
       if (
-        video.readyState <
-        2
+        video.srcObject
       ) {
 
-        await wait(
-          500
-        );
+        const tracks =
+          video.srcObject
+            .getVideoTracks();
+
+
+        if (
+          tracks &&
+          tracks.length > 0
+        ) {
+
+          const track =
+            tracks[0];
+
+
+          if (
+            track.getCapabilities
+          ) {
+
+            const capabilities =
+              track.getCapabilities();
+
+
+            // ---------------------------------------
+            // Continuous autofocus
+            // ---------------------------------------
+
+            if (
+              capabilities.focusMode &&
+              Array.isArray(
+                capabilities.focusMode
+              )
+            ) {
+
+              if (
+                capabilities.focusMode
+                  .includes(
+                    "continuous"
+                  )
+              ) {
+
+                try {
+
+                  await track
+                    .applyConstraints({
+
+                      advanced: [
+
+                        {
+                          focusMode:
+                            "continuous"
+                        }
+
+                      ]
+
+                    });
+
+                } catch (focusError) {
+
+                  console.log(
+                    "Continuous focus not supported:",
+                    focusError
+                  );
+
+                }
+
+              }
+
+            }
+
+
+            // ---------------------------------------
+            // เปิดความละเอียดสูงถ้ารองรับ
+            // ---------------------------------------
+
+            try {
+
+              if (
+                capabilities.width &&
+                capabilities.width.max
+              ) {
+
+                await track
+                  .applyConstraints({
+
+                    width: {
+                      ideal: 1280
+                    },
+
+                    height: {
+                      ideal: 720
+                    }
+
+                  });
+
+              }
+
+            } catch (resolutionError) {
+
+              console.log(
+                "Resolution setting skipped:",
+                resolutionError
+              );
+
+            }
+
+          }
+
+        }
 
       }
 
-    } catch (e) {
+    } catch (focusError) {
 
-      console.error(e);
+      console.log(
+        "Focus setup skipped:",
+        focusError
+      );
+
+    }
+
+
+    // -------------------------------------------------
+    // ให้กล้องเริ่มนิ่งก่อน
+    // -------------------------------------------------
+
+    await wait(
+      800
+    );
+
+
+    // -------------------------------------------------
+    // บังคับเล่น Video
+    // -------------------------------------------------
+
+    try {
+
+      await video.play();
+
+    } catch (playError) {
+
+      console.log(
+        "Video play:",
+        playError
+      );
 
     }
 
@@ -1322,20 +1950,36 @@ function wait(
 
 
 // =====================================================
-// ปิดกล้อง
-// สำคัญ: ล้าง Reader + Video + Stream
-// เพื่อให้เปิดรอบใหม่ได้จริง
+// ปุ่มปิดกล้อง
+// =====================================================
+
+stopCameraButton.addEventListener(
+  "click",
+  function() {
+
+    stopCamera();
+
+  }
+);
+
+
+// =====================================================
+// ปิดกล้องแบบสมบูรณ์
 // =====================================================
 
 function stopCamera() {
+
+  // ---------------------------------------------------
+  // ป้องกัน callback จากกล้องเก่า
+  // ---------------------------------------------------
 
   scanHandled =
     true;
 
 
-  // ===================================================
-  // หยุด ZXing controls
-  // ===================================================
+  // ---------------------------------------------------
+  // หยุด ZXing
+  // ---------------------------------------------------
 
   try {
 
@@ -1350,17 +1994,17 @@ function stopCamera() {
 
   } catch (error) {
 
-    console.error(
-      "cameraControls stop error:",
+    console.log(
+      "cameraControls.stop:",
       error
     );
 
   }
 
 
-  // ===================================================
-  // Reset Reader
-  // ===================================================
+  // ---------------------------------------------------
+  // Reset ZXing Reader
+  // ---------------------------------------------------
 
   try {
 
@@ -1368,25 +2012,28 @@ function stopCamera() {
 
       codeReader.reset();
 
+      codeReader =
+        null;
+
     }
 
   } catch (error) {
 
-    console.error(
-      "codeReader reset error:",
+    console.log(
+      "codeReader.reset:",
       error
     );
+
+
+    codeReader =
+      null;
 
   }
 
 
-  codeReader =
-    null;
-
-
-  // ===================================================
-  // หยุดทุก Video Track
-  // ===================================================
+  // ---------------------------------------------------
+  // หยุดกล้องจริงทุก Track
+  // ---------------------------------------------------
 
   try {
 
@@ -1394,9 +2041,12 @@ function stopCamera() {
       video.srcObject
     ) {
 
+      const stream =
+        video.srcObject;
+
+
       const tracks =
-        video.srcObject
-          .getTracks();
+        stream.getTracks();
 
 
       tracks.forEach(
@@ -1406,9 +2056,12 @@ function stopCamera() {
 
             track.stop();
 
-          } catch (e) {
+          } catch (error) {
 
-            console.error(e);
+            console.log(
+              "track.stop:",
+              error
+            );
 
           }
 
@@ -1423,21 +2076,24 @@ function stopCamera() {
 
   } catch (error) {
 
-    console.error(
-      "video stream stop error:",
+    console.log(
+      "stream stop:",
       error
     );
 
   }
 
 
-  // ===================================================
+  // ---------------------------------------------------
   // Reset video element
-  // ===================================================
+  // ---------------------------------------------------
 
   try {
 
     video.pause();
+
+    video.srcObject =
+      null;
 
     video.removeAttribute(
       "src"
@@ -1447,36 +2103,22 @@ function stopCamera() {
 
   } catch (error) {
 
-    console.error(
-      "video reset error:",
+    console.log(
+      "video reset:",
       error
     );
 
   }
 
 
-  // ===================================================
+  // ---------------------------------------------------
   // ซ่อนกล้อง
-  // ===================================================
+  // ---------------------------------------------------
 
   cameraBox.style.display =
     "none";
 
 }
-
-
-// =====================================================
-// ปุ่มปิดกล้อง
-// =====================================================
-
-stopCameraButton.addEventListener(
-  "click",
-  function() {
-
-    stopCamera();
-
-  }
-);
 
 
 // =====================================================
@@ -1503,9 +2145,9 @@ async function saveData() {
     barcodeInput.value.trim();
 
 
-  // ===================================================
+  // ---------------------------------------------------
   // ตรวจพนักงาน
-  // ===================================================
+  // ---------------------------------------------------
 
   if (!fullName) {
 
@@ -1519,9 +2161,9 @@ async function saveData() {
   }
 
 
-  // ===================================================
+  // ---------------------------------------------------
   // ตรวจ Barcode
-  // ===================================================
+  // ---------------------------------------------------
 
   if (!barcode) {
 
@@ -1545,9 +2187,9 @@ async function saveData() {
 
   try {
 
-    // =================================================
-    // เช็กซ้ำอีกครั้งก่อนบันทึก
-    // =================================================
+    // -------------------------------------------------
+    // เช็กซ้ำก่อนบันทึกอีกครั้ง
+    // -------------------------------------------------
 
     const duplicate =
       await checkBarcodeImmediately(
@@ -1570,9 +2212,9 @@ async function saveData() {
     }
 
 
-    // =================================================
+    // -------------------------------------------------
     // ส่งข้อมูลไป Apps Script
-    // =================================================
+    // -------------------------------------------------
 
     const result =
       await callAppsScript({
@@ -1592,9 +2234,9 @@ async function saveData() {
       });
 
 
-    // =================================================
-    // Backend พบ Barcode ซ้ำ
-    // =================================================
+    // -------------------------------------------------
+    // Backend แจ้งว่าซ้ำ
+    // -------------------------------------------------
 
     if (
       result &&
@@ -1620,9 +2262,9 @@ async function saveData() {
     }
 
 
-    // =================================================
+    // -------------------------------------------------
     // บันทึกสำเร็จ
-    // =================================================
+    // -------------------------------------------------
 
     if (
       result &&
@@ -1642,7 +2284,7 @@ async function saveData() {
 
 
       // โหลดประวัติใหม่
-      loadHistory();
+      await loadHistory();
 
 
     } else {
@@ -1711,9 +2353,9 @@ async function loadHistory() {
       });
 
 
-    // =================================================
+    // -------------------------------------------------
     // ไม่มีข้อมูล
-    // =================================================
+    // -------------------------------------------------
 
     if (
       !result ||
@@ -1727,6 +2369,7 @@ async function loadHistory() {
         'ยังไม่มีข้อมูลการสแกน' +
         '</div>';
 
+
       return;
 
     }
@@ -1736,9 +2379,9 @@ async function loadHistory() {
       "";
 
 
-    // =================================================
+    // -------------------------------------------------
     // แสดงประวัติ
-    // =================================================
+    // -------------------------------------------------
 
     result.items.forEach(
       function(item) {
@@ -1778,18 +2421,25 @@ async function loadHistory() {
           "history-name";
 
 
+        let nameText =
+          item.fullName ||
+          "";
+
+
+        if (
+          item.nickname
+        ) {
+
+          nameText +=
+            " (" +
+            item.nickname +
+            ")";
+
+        }
+
+
         name.textContent =
-          (
-            item.fullName ||
-            ""
-          ) +
-          (
-            item.nickname
-              ? " (" +
-                item.nickname +
-                ")"
-              : ""
-          );
+          nameText;
 
 
         const time =
@@ -1909,7 +2559,7 @@ function showPermanentWarning(
 
 // =====================================================
 // ล้างข้อความ
-// เปิดกล้องใหม่แล้วค่อยล้าง
+// เรียกเฉพาะตอนกดเปิดกล้องใหม่
 // =====================================================
 
 function clearMessage() {
@@ -1929,7 +2579,7 @@ function clearMessage() {
 
 
 // =====================================================
-// เริ่มระบบ
+// เริ่มต้นระบบ
 // =====================================================
 
 loadHistory();

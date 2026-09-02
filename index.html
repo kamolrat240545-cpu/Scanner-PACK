@@ -192,7 +192,6 @@
     }
 
     @media (max-width: 600px) {
-
       .container {
         padding: 12px 10px 30px;
       }
@@ -228,9 +227,7 @@
 
   <h1>📦 ระบบสแกน Barcode</h1>
 
-
   <!-- เลือกพนักงาน -->
-
   <div class="card">
 
     <label for="employee">
@@ -413,7 +410,6 @@
 
 
   <!-- กล้อง -->
-
   <div class="card">
 
     <label>
@@ -421,15 +417,11 @@
     </label>
 
     <p class="hint">
-
       ให้นำ Barcode ให้อยู่ตรงกลางกล้อง
       <br>
-
       โดยเฉพาะ Barcode แนวยาวของ Flash
       <br>
-
       และควรมีแสงสว่างเพียงพอ
-
     </p>
 
     <div id="reader"></div>
@@ -439,18 +431,14 @@
       <button
         class="btn-camera"
         id="startCamera">
-
         📷 เปิดกล้อง
-
       </button>
 
       <button
         class="btn-stop"
         id="stopCamera"
         disabled>
-
         ⏹ หยุดกล้อง
-
       </button>
 
     </div>
@@ -459,7 +447,6 @@
 
 
   <!-- กรอก Barcode เอง -->
-
   <div class="card">
 
     <label>
@@ -476,15 +463,12 @@
 
 
   <!-- ปุ่มบันทึก -->
-
   <div class="card">
 
     <button
       class="btn-save"
       id="saveButton">
-
       💾 บันทึกลง Google Sheet
-
     </button>
 
   </div>
@@ -497,7 +481,6 @@
 
 
   <!-- ประวัติ -->
-
   <div class="card">
 
     <div class="history-title">
@@ -507,9 +490,7 @@
     <div
       id="history"
       class="history">
-
       กำลังโหลด...
-
     </div>
 
   </div>
@@ -520,11 +501,11 @@
 <script>
 
   // =========================================================
-  // URL Google Apps Script ตัวใหม่
+  // URL Google Apps Script ตัวล่าสุด
   // =========================================================
 
   const WEB_APP_URL =
-    "https://script.google.com/macros/s/AKfycbzXIi3TNDlc3vwv4dDdJcKMtDPWzwNtXp4G2U77FhE0kDJcBUwG-RVLQx08FnOrGW5C/exec";
+    "https://script.google.com/macros/s/AKfycbybRQU6iY0TyTtOhaUJ_aM4YG3KYcWLul9quwsPIwfscGQFmh4b5kffn3YFBTS80Jte/exec";
 
 
   // =========================================================
@@ -532,13 +513,9 @@
   // =========================================================
 
   let codeReader = null;
-
   let selectedDeviceId = null;
-
   let cameraRunning = false;
-
   let lastScannedCode = "";
-
   let lastScanTime = 0;
 
 
@@ -569,7 +546,7 @@
 
 
   // =========================================================
-  // ชื่อเล่น
+  // แสดงชื่อเล่น
   // =========================================================
 
   employeeEl.addEventListener(
@@ -651,15 +628,12 @@
         "info"
       );
 
-
       codeReader =
         new ZXingBrowser.BrowserMultiFormatReader();
-
 
       const devices =
         await ZXingBrowser.BrowserCodeReader
           .listVideoInputDevices();
-
 
       if (
         !devices ||
@@ -884,7 +858,7 @@
 
 
   // =========================================================
-  // JSONP
+  // JSONP ติดต่อ Google Apps Script
   // =========================================================
 
   function jsonp(
@@ -1207,7 +1181,7 @@
 
 
   // =========================================================
-  // กด Enter ในช่อง Barcode
+  // Enter เพื่อบันทึก
   // =========================================================
 
   barcodeEl.addEventListener(
@@ -1414,7 +1388,7 @@
 
 
   // =========================================================
-  // โหลดประวัติเมื่อเปิดเว็บ
+  // โหลดประวัติทันที
   // =========================================================
 
   loadHistory();

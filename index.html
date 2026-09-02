@@ -13,7 +13,7 @@
   <title>ระบบสแกน Barcode</title>
 
 
-  <!-- ZXing -->
+  <!-- ZXing Barcode Scanner -->
   <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js"></script>
 
 
@@ -41,7 +41,6 @@
 
     .container {
       width: 100%;
-
       max-width: 700px;
 
       margin: 0 auto;
@@ -61,7 +60,6 @@
       text-align: center;
 
       margin-top: 0;
-
       margin-bottom: 25px;
 
       font-size: 30px;
@@ -72,11 +70,9 @@
       display: block;
 
       margin-top: 18px;
-
       margin-bottom: 7px;
 
       font-size: 19px;
-
       font-weight: bold;
     }
 
@@ -165,6 +161,8 @@
       border-radius: 12px;
 
       overflow: hidden;
+
+      position: relative;
     }
 
 
@@ -175,7 +173,11 @@
 
       height: auto;
 
+      min-height: 250px;
+
       background: #000;
+
+      object-fit: cover;
     }
 
 
@@ -199,6 +201,8 @@
       font-weight: bold;
 
       line-height: 1.5;
+
+      word-break: break-word;
     }
 
 
@@ -404,6 +408,8 @@
     type="text"
     placeholder="สแกนหรือกรอกเลขพัสดุ"
     autocomplete="off"
+    autocapitalize="characters"
+    spellcheck="false"
   >
 
 
@@ -429,6 +435,7 @@
       id="video"
       playsinline
       muted
+      autoplay
     ></video>
 
   </div>
@@ -595,6 +602,10 @@ let codeReader = null;
 
 let cameraControls = null;
 
+let cameraStarting = false;
+
+let scanHandled = false;
+
 
 // =====================================================
 // Element
@@ -743,7 +754,9 @@ employeeSelect.addEventListener(
 // GitHub → Apps Script
 // =====================================================
 
-function callAppsScript(params) {
+function callAppsScript(
+  params
+) {
 
   return new Promise(
     function(resolve, reject) {
@@ -767,7 +780,20 @@ function callAppsScript(params) {
         false;
 
 
+      let timeoutId =
+        null;
+
+
       function cleanup() {
+
+        if (timeoutId) {
+
+          clearTimeout(
+            timeoutId
+          );
+
+        }
+
 
         try {
 
@@ -872,29 +898,30 @@ function callAppsScript(params) {
       );
 
 
-      setTimeout(
-        function() {
+      timeoutId =
+        setTimeout(
+          function() {
 
-          if (finished) {
-            return;
-          }
-
-
-          finished = true;
+            if (finished) {
+              return;
+            }
 
 
-          cleanup();
+            finished = true;
 
 
-          reject(
-            new Error(
-              "เชื่อมต่อ Apps Script ไม่สำเร็จ"
-            )
-          );
+            cleanup();
 
-        },
-        15000
-      );
+
+            reject(
+              new Error(
+                "เชื่อมต่อ Apps Script ไม่สำเร็จ"
+              )
+            );
+
+          },
+          15000
+        );
 
     }
   );
@@ -903,7 +930,7 @@ function callAppsScript(params) {
 
 
 // =====================================================
-// เช็ก Barcode ซ้ำทันทีหลังสแกน
+// เช็ก Barcode ซ้ำทันที
 // =====================================================
 
 async function checkBarcodeImmediately(
@@ -912,12 +939,14 @@ async function checkBarcodeImmediately(
 
   barcode =
     String(
-      barcode || ''
+      barcode || ""
     ).trim();
 
 
   if (!barcode) {
+
     return false;
+
   }
 
 
@@ -989,43 +1018,65 @@ cameraButton.addEventListener(
 
 async function startCamera() {
 
-  // =============================================
-  // เมื่อเปิดกล้องใหม่
-  // ให้ล้างข้อความเตือนเก่า
-  // =============================================
-
-  clearMessage();
-
-
-  // =============================================
-  // ปิดกล้องเดิมก่อน
-  // =============================================
-
-  stopCamera();
-
-
-  if (!window.ZXingBrowser) {
-
-    showMessage(
-      "โหลดระบบสแกน Barcode ไม่สำเร็จ",
-      false
-    );
+  // ป้องกันกดเปิดกล้องซ้ำหลายครั้ง
+  if (cameraStarting) {
 
     return;
 
   }
 
 
+  cameraStarting =
+    true;
+
+
+  // ===================================================
+  // เปิดกล้องใหม่ = ล้างข้อความแจ้งเตือนเก่า
+  // ===================================================
+
+  clearMessage();
+
+
+  // ===================================================
+  // ปิดกล้องเก่าให้หมดก่อน
+  // ===================================================
+
+  stopCamera();
+
+
+  // รอให้กล้องเก่าปิดสมบูรณ์
+  await wait(500);
+
+
+  scanHandled =
+    false;
+
+
   try {
 
-    cameraBox.style.display =
-      "block";
+    if (
+      !window.ZXingBrowser
+    ) {
 
+      throw new Error(
+        "โหลดระบบสแกน Barcode ไม่สำเร็จ"
+      );
+
+    }
+
+
+    // =================================================
+    // สร้าง Reader ใหม่ทุกครั้ง
+    // =================================================
 
     codeReader =
       new ZXingBrowser
         .BrowserMultiFormatReader();
 
+
+    // =================================================
+    // ขอรายการกล้อง
+    // =================================================
 
     const devices =
       await ZXingBrowser
@@ -1045,19 +1096,57 @@ async function startCamera() {
     }
 
 
-    // =============================================
-    // ใช้กล้องตัวสุดท้าย
-    // =============================================
+    // =================================================
+    // เลือกกล้องหลัง
+    // =================================================
 
-    const deviceId =
+    let deviceId =
       devices[
         devices.length - 1
       ].deviceId;
 
 
-    // =============================================
-    // เริ่มสแกน
-    // =============================================
+    // ถ้ามีหลายกล้อง พยายามเลือกกล้องหลัง
+    for (
+      let i = 0;
+      i < devices.length;
+      i++
+    ) {
+
+      const label =
+        (
+          devices[i].label ||
+          ""
+        ).toLowerCase();
+
+
+      if (
+        label.includes("back") ||
+        label.includes("rear") ||
+        label.includes("environment")
+      ) {
+
+        deviceId =
+          devices[i].deviceId;
+
+        break;
+
+      }
+
+    }
+
+
+    // =================================================
+    // เปิดพื้นที่กล้อง
+    // =================================================
+
+    cameraBox.style.display =
+      "block";
+
+
+    // =================================================
+    // เริ่มกล้อง
+    // =================================================
 
     cameraControls =
       await codeReader
@@ -1071,44 +1160,64 @@ async function startCamera() {
             result
           ) {
 
+            // ไม่มีผลลัพธ์
             if (!result) {
+
               return;
+
             }
 
 
-            // =================================
-            // ได้ Barcode
-            // =================================
+            // ป้องกันสแกนซ้ำจากเฟรมเดียวกัน
+            if (scanHandled) {
+
+              return;
+
+            }
+
+
+            scanHandled =
+              true;
+
+
+            // =================================================
+            // อ่าน Barcode
+            // =================================================
 
             const code =
-              result
-                .getText()
-                .trim();
+              String(
+                result.getText() || ""
+              ).trim();
 
 
             if (!code) {
+
+              scanHandled =
+                false;
+
               return;
+
             }
 
 
-            // =================================
+            // =================================================
             // ใส่ Barcode ลงช่อง
-            // =================================
+            // =================================================
 
             barcodeInput.value =
               code;
 
 
-            // =================================
+            // =================================================
             // หยุดกล้องทันที
-            // =================================
+            // =================================================
 
             stopCamera();
 
 
-            // =================================
-            // เช็กซ้ำทันที
-            // =================================
+            // =================================================
+            // เช็ก Barcode ซ้ำทันที
+            // =================================================
 
             const duplicate =
               await checkBarcodeImmediately(
@@ -1116,10 +1225,9 @@ async function startCamera() {
               );
 
 
-            // =================================
+            // =================================================
             // ถ้าไม่ซ้ำ
-            // แจ้งว่าสแกนสำเร็จ
-            // =================================
+            // =================================================
 
             if (!duplicate) {
 
@@ -1134,6 +1242,30 @@ async function startCamera() {
           }
 
         );
+
+
+    // =================================================
+    // รอให้ video พร้อม
+    // =================================================
+
+    try {
+
+      if (
+        video.readyState <
+        2
+      ) {
+
+        await wait(
+          500
+        );
+
+      }
+
+    } catch (e) {
+
+      console.error(e);
+
+    }
 
 
   } catch (error) {
@@ -1156,22 +1288,54 @@ async function startCamera() {
       false
     );
 
+
+  } finally {
+
+    cameraStarting =
+      false;
+
   }
 
 }
 
 
 // =====================================================
-// ปิดกล้อง
+// ฟังก์ชันรอ
 // =====================================================
 
-stopCameraButton.addEventListener(
-  "click",
-  stopCamera
-);
+function wait(
+  milliseconds
+) {
 
+  return new Promise(
+    function(resolve) {
+
+      setTimeout(
+        resolve,
+        milliseconds
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================================
+// ปิดกล้อง
+// สำคัญ: ล้าง Reader + Video + Stream
+// เพื่อให้เปิดรอบใหม่ได้จริง
+// =====================================================
 
 function stopCamera() {
+
+  scanHandled =
+    true;
+
+
+  // ===================================================
+  // หยุด ZXing controls
+  // ===================================================
 
   try {
 
@@ -1186,24 +1350,70 @@ function stopCamera() {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "cameraControls stop error:",
+      error
+    );
 
   }
 
 
+  // ===================================================
+  // Reset Reader
+  // ===================================================
+
   try {
 
-    if (video.srcObject) {
+    if (codeReader) {
 
+      codeReader.reset();
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "codeReader reset error:",
+      error
+    );
+
+  }
+
+
+  codeReader =
+    null;
+
+
+  // ===================================================
+  // หยุดทุก Video Track
+  // ===================================================
+
+  try {
+
+    if (
       video.srcObject
-        .getTracks()
-        .forEach(
-          function(track) {
+    ) {
+
+      const tracks =
+        video.srcObject
+          .getTracks();
+
+
+      tracks.forEach(
+        function(track) {
+
+          try {
 
             track.stop();
 
+          } catch (e) {
+
+            console.error(e);
+
           }
-        );
+
+        }
+      );
 
 
       video.srcObject =
@@ -1213,15 +1423,60 @@ function stopCamera() {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "video stream stop error:",
+      error
+    );
 
   }
 
+
+  // ===================================================
+  // Reset video element
+  // ===================================================
+
+  try {
+
+    video.pause();
+
+    video.removeAttribute(
+      "src"
+    );
+
+    video.load();
+
+  } catch (error) {
+
+    console.error(
+      "video reset error:",
+      error
+    );
+
+  }
+
+
+  // ===================================================
+  // ซ่อนกล้อง
+  // ===================================================
 
   cameraBox.style.display =
     "none";
 
 }
+
+
+// =====================================================
+// ปุ่มปิดกล้อง
+// =====================================================
+
+stopCameraButton.addEventListener(
+  "click",
+  function() {
+
+    stopCamera();
+
+  }
+);
 
 
 // =====================================================
@@ -1248,9 +1503,9 @@ async function saveData() {
     barcodeInput.value.trim();
 
 
-  // =============================================
+  // ===================================================
   // ตรวจพนักงาน
-  // =============================================
+  // ===================================================
 
   if (!fullName) {
 
@@ -1264,9 +1519,9 @@ async function saveData() {
   }
 
 
-  // =============================================
+  // ===================================================
   // ตรวจ Barcode
-  // =============================================
+  // ===================================================
 
   if (!barcode) {
 
@@ -1290,9 +1545,9 @@ async function saveData() {
 
   try {
 
-    // ===========================================
+    // =================================================
     // เช็กซ้ำอีกครั้งก่อนบันทึก
-    // ===========================================
+    // =================================================
 
     const duplicate =
       await checkBarcodeImmediately(
@@ -1315,9 +1570,9 @@ async function saveData() {
     }
 
 
-    // ===========================================
-    // บันทึก
-    // ===========================================
+    // =================================================
+    // ส่งข้อมูลไป Apps Script
+    // =================================================
 
     const result =
       await callAppsScript({
@@ -1337,9 +1592,9 @@ async function saveData() {
       });
 
 
-    // ===========================================
-    // Backend พบว่าซ้ำ
-    // ===========================================
+    // =================================================
+    // Backend พบ Barcode ซ้ำ
+    // =================================================
 
     if (
       result &&
@@ -1365,9 +1620,9 @@ async function saveData() {
     }
 
 
-    // ===========================================
+    // =================================================
     // บันทึกสำเร็จ
-    // ===========================================
+    // =================================================
 
     if (
       result &&
@@ -1381,7 +1636,7 @@ async function saveData() {
       );
 
 
-      // ล้าง Barcode หลังบันทึก
+      // ล้าง Barcode
       barcodeInput.value =
         "";
 
@@ -1456,9 +1711,9 @@ async function loadHistory() {
       });
 
 
-    // =============================================
+    // =================================================
     // ไม่มีข้อมูล
-    // =============================================
+    // =================================================
 
     if (
       !result ||
@@ -1481,9 +1736,9 @@ async function loadHistory() {
       "";
 
 
-    // =============================================
+    // =================================================
     // แสดงประวัติ
-    // =============================================
+    // =================================================
 
     result.items.forEach(
       function(item) {
@@ -1524,7 +1779,10 @@ async function loadHistory() {
 
 
         name.textContent =
-          item.fullName +
+          (
+            item.fullName ||
+            ""
+          ) +
           (
             item.nickname
               ? " (" +
@@ -1599,7 +1857,7 @@ async function loadHistory() {
 
 
 // =====================================================
-// แสดงข้อความทั่วไป
+// แจ้งเตือนทั่วไป
 // =====================================================
 
 function showMessage(
@@ -1651,7 +1909,7 @@ function showPermanentWarning(
 
 // =====================================================
 // ล้างข้อความ
-// จะถูกเรียกตอนกด "เปิดกล้อง"
+// เปิดกล้องใหม่แล้วค่อยล้าง
 // =====================================================
 
 function clearMessage() {

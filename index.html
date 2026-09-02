@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>ระบบสแกน Barcode</title>
@@ -12,232 +10,175 @@
   <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js"></script>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      padding: 15px;
-      background: #f1f5f9;
-      font-family: Arial, "Noto Sans Thai", sans-serif;
-      color: #172033;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
     }
 
-    .box {
-      width: 100%;
+    .container {
       max-width: 650px;
-      margin: auto;
-      background: white;
+      margin: 20px auto;
       padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
     }
 
     h1 {
       text-align: center;
-      font-size: 28px;
-      margin: 5px 0 8px;
+      margin-top: 0;
+      font-size: 26px;
     }
 
-    .subtitle {
-      text-align: center;
-      color: #667085;
-      margin-bottom: 20px;
-    }
-
-    .section {
-      margin-top: 18px;
-      padding: 16px;
-      background: #f8fafc;
-      border-radius: 15px;
-    }
-
-    .section-title {
-      font-size: 19px;
+    label {
+      display: block;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-top: 15px;
+      margin-bottom: 6px;
     }
 
     select,
     input {
       width: 100%;
-      height: 54px;
-      padding: 0 14px;
-      border: 1px solid #d0d5dd;
-      border-radius: 12px;
-      font-size: 18px;
-      background: white;
-      outline: none;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
     }
 
-    select:focus,
-    input:focus {
-      border-color: #1976d2;
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .camera-btn {
+      background: #1976d2;
+      color: white;
+    }
+
+    .save-btn {
+      background: #2e7d32;
+      color: white;
+    }
+
+    .stop-btn {
+      background: #d32f2f;
+      color: white;
+    }
+
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
     }
 
     #reader {
       width: 100%;
       margin-top: 15px;
-      border-radius: 15px;
+      display: none;
+      border-radius: 10px;
       overflow: hidden;
       background: #000;
-      min-height: 100px;
-      position: relative;
     }
 
-    #reader video {
-      width: 100% !important;
-      height: auto !important;
-      display: block;
-      object-fit: cover;
-    }
-
-    .scan-guide {
-      width: 80%;
-      height: 80px;
-      margin: -180px auto 100px auto;
-      border: 3px solid #22c55e;
-      border-radius: 10px;
-      pointer-events: none;
-      position: relative;
-      z-index: 5;
-    }
-
-    button {
-      width: 100%;
-      height: 56px;
-      border: none;
-      border-radius: 13px;
-      margin-top: 12px;
-      font-size: 19px;
-      font-weight: bold;
-      color: white;
-      cursor: pointer;
-    }
-
-    #openCamera {
-      background: #1976d2;
-    }
-
-    #stopCamera {
-      background: #dc2626;
-      display: none;
-    }
-
-    #saveButton {
-      background: #16a34a;
-    }
-
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    #status {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
+    #result {
       margin-top: 15px;
-      min-height: 28px;
-      white-space: pre-line;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
     }
 
     .success {
-      color: #15803d;
+      background: #e8f5e9;
+      color: #2e7d32;
     }
 
     .error {
-      color: #dc2626;
+      background: #ffebee;
+      color: #c62828;
     }
 
-    .info {
-      color: #1976d2;
+    .warning {
+      background: #fff8e1;
+      color: #ef6c00;
     }
 
-    .nickname {
-      margin-top: 10px;
-      padding: 10px;
-      background: #eaf4ff;
-      border-radius: 10px;
-      color: #1261aa;
-      font-size: 17px;
-    }
-
-    .tip {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #667085;
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    .result-box {
+    .barcode-display {
       margin-top: 15px;
-      padding: 12px;
-      background: #ecfdf3;
-      border-radius: 10px;
-      color: #15803d;
-      font-size: 16px;
+      padding: 15px;
+      background: #f1f3f4;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
       word-break: break-all;
-      display: none;
+    }
+
+    .history-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
 
     .history-item {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 8px;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
     }
 
     .history-barcode {
       font-weight: bold;
-      font-size: 17px;
-      word-break: break-all;
+      font-size: 16px;
     }
 
-    .history-name {
-      margin-top: 5px;
-    }
-
-    .history-time {
+    .history-info {
+      font-size: 13px;
+      color: #666;
       margin-top: 4px;
-      color: #667085;
-      font-size: 14px;
     }
 
+    .status {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin-top: 8px;
+    }
   </style>
-
 </head>
 
 <body>
 
-<div class="box">
+<div class="container">
 
-  <h1>📦 ระบบสแกน Barcode</h1>
+  <div class="card">
 
-  <div class="subtitle">
-    ระบบบันทึกผู้สแกนและเลขพัสดุ
-  </div>
+    <h1>📦 ระบบสแกน Barcode</h1>
 
+    <label for="employee">เลือกพนักงาน</label>
 
-  <!-- =========================
-       เลือกผู้สแกน
-       ========================= -->
-
-  <div class="section">
-
-    <div class="section-title">
-      👤 เลือกผู้สแกน
-    </div>
-
-    <select id="employee">
-
-      <option value="">
-        -- เลือกชื่อพนักงาน --
-      </option>
+    <select id="employee" onchange="updateEmployee()">
+      <option value="">-- เลือกชื่อพนักงาน --</option>
 
       <option value="จุรีพร สุขพิพัฒน์|เฟิร์น">
         จุรีพร สุขพิพัฒน์ - เฟิร์น
@@ -402,110 +343,86 @@
     </select>
 
 
-    <div class="nickname">
-      ชื่อเล่น:
-      <b id="nickname">-</b>
-    </div>
+    <label>ชื่อจริง</label>
+    <input
+      type="text"
+      id="fullName"
+      readonly
+      placeholder="ชื่อจริงจะแสดงตรงนี้"
+    >
 
-  </div>
+    <label>ชื่อเล่น</label>
+    <input
+      type="text"
+      id="nickname"
+      readonly
+      placeholder="ชื่อเล่นจะแสดงตรงนี้"
+    >
 
 
-  <!-- =========================
-       กล้อง
-       ========================= -->
+    <label>เลขพัสดุ</label>
 
-  <div class="section">
+    <input
+      type="text"
+      id="barcode"
+      placeholder="สแกน Barcode หรือกรอกเลขพัสดุ"
+      autocomplete="off"
+    >
 
-    <div class="section-title">
-      📷 สแกน Barcode
-    </div>
 
-    <div id="reader">
-
-      <video
-        id="video"
-        autoplay
-        muted
-        playsinline
-      ></video>
-
-    </div>
-
-    <div class="scan-guide"></div>
-
-    <button id="openCamera">
+    <button
+      class="camera-btn"
+      id="cameraButton"
+      onclick="openCamera()"
+    >
       📷 เปิดกล้องสแกน
     </button>
 
-    <button id="stopCamera">
-      ⏹ ปิดกล้อง
+
+    <div id="reader"></div>
+
+
+    <button
+      class="stop-btn"
+      id="stopButton"
+      onclick="stopCamera()"
+      style="display:none;"
+    >
+      ⛔ ปิดกล้อง
     </button>
 
-    <div class="tip">
-      ให้นำ Barcode ให้อยู่ตรงกลางกล้อง
-      <br>
-      โดยเฉพาะ Barcode แนวยาวของ Flash
-      <br>
-      และควรมีแสงสว่างเพียงพอ
-    </div>
-
-  </div>
-
-
-  <!-- =========================
-       กรอก Barcode เอง
-       ========================= -->
-
-  <div class="section">
-
-    <div class="section-title">
-      ⌨️ หรือกรอก Barcode เอง
-    </div>
-
-    <input
-      id="barcode"
-      type="text"
-      inputmode="text"
-      autocomplete="off"
-      placeholder="เลข Barcode"
-    >
 
     <div
-      id="resultBox"
-      class="result-box"
+      id="barcodeDisplay"
+      class="barcode-display"
+      style="display:none;"
     ></div>
 
-  </div>
 
-
-  <!-- =========================
-       ปุ่มบันทึก
-       ========================= -->
-
-  <div class="section">
-
-    <button id="saveButton">
-      💾 บันทึกลง Google Sheet
+    <button
+      class="save-btn"
+      id="saveButton"
+      onclick="saveBarcode()"
+    >
+      💾 บันทึกข้อมูล
     </button>
 
+
+    <div id="result"></div>
+
+    <div class="status" id="cameraStatus"></div>
+
   </div>
 
 
-  <div id="status"></div>
+  <div class="card">
 
-
-  <!-- =========================
-       ประวัติ
-       ========================= -->
-
-  <div class="section">
-
-    <div class="section-title">
-      📋 รายการสแกนล่าสุด
+    <div class="history-title">
+      📋 รายการล่าสุด
     </div>
 
     <div id="history">
-      กำลังโหลด...
+      กำลังโหลดข้อมูล...
     </div>
 
   </div>
@@ -515,434 +432,48 @@
 
 <script>
 
-
 /* =========================================================
-   GOOGLE APPS SCRIPT WEB APP URL
-   ใช้ Deployment ล่าสุดของคุณ
+   Google Apps Script Web App URL
+   VERSION 8
    ========================================================= */
 
-const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbwU89eZ30CefrnoZci7WAg4ykhC3clumnvtLLeX3aWxJLVGr9XCTUJJGDBlxWpf7K_s/exec";
-
-
-/* =========================================================
-   ตัวแปร
-   ========================================================= */
-
-let scanner = null;
-
-let scannerControls = null;
-
-let isScanning = false;
-
-let scanLocked = false;
+const GAS_URL =
+  "https://script.google.com/macros/s/AKfycbwtXTuKW9rrieYI2h3vMXuRrG6eQEJkpykrTd2plLiB4oiiZ2WEXJOqufpKhyDAoMHH/exec";
 
 
 /* =========================================================
-   Element
+   ตัวแปรกล้อง
    ========================================================= */
 
-const employee =
-  document.getElementById("employee");
-
-const nickname =
-  document.getElementById("nickname");
-
-const barcode =
-  document.getElementById("barcode");
-
-const resultBox =
-  document.getElementById("resultBox");
-
-const status =
-  document.getElementById("status");
-
-const openCamera =
-  document.getElementById("openCamera");
-
-const stopCamera =
-  document.getElementById("stopCamera");
-
-const saveButton =
-  document.getElementById("saveButton");
-
-const video =
-  document.getElementById("video");
-
-const historyBox =
-  document.getElementById("history");
+let codeReader = null;
+let selectedDeviceId = null;
+let cameraRunning = false;
 
 
 /* =========================================================
-   เปลี่ยนชื่อเล่น
+   เลือกพนักงาน
    ========================================================= */
 
-employee.addEventListener(
-  "change",
-  function() {
+function updateEmployee() {
 
-    const value =
-      employee.value.split("|");
+  const value =
+    document.getElementById("employee").value;
 
-    nickname.textContent =
-      value[1] || "-";
+  if (!value) {
 
-  }
-);
+    document.getElementById("fullName").value = "";
+    document.getElementById("nickname").value = "";
 
-
-/* =========================================================
-   แสดงสถานะ
-   ========================================================= */
-
-function showStatus(message, type) {
-
-  status.textContent =
-    message;
-
-  status.className =
-    type || "";
-
-}
-
-
-/* =========================================================
-   แสดง Barcode
-   ========================================================= */
-
-function showBarcode(code) {
-
-  barcode.value =
-    code;
-
-  resultBox.style.display =
-    "block";
-
-  resultBox.textContent =
-    "Barcode: " + code;
-
-}
-
-
-/* =========================================================
-   JSONP
-   GitHub Pages → Apps Script
-   ========================================================= */
-
-function jsonp(params, timeoutMs = 15000) {
-
-  return new Promise(
-    function(resolve, reject) {
-
-      const callbackName =
-        "jsonp_callback_" +
-        Date.now() +
-        "_" +
-        Math.random()
-          .toString(36)
-          .substring(2);
-
-
-      const script =
-        document.createElement("script");
-
-
-      let finished = false;
-
-
-      function cleanup() {
-
-        if (script.parentNode) {
-
-          script.parentNode
-            .removeChild(script);
-
-        }
-
-
-        try {
-
-          delete window[
-            callbackName
-          ];
-
-        } catch (e) {
-
-          window[
-            callbackName
-          ] = undefined;
-
-        }
-
-      }
-
-
-      const timer =
-        setTimeout(
-          function() {
-
-            if (finished) {
-              return;
-            }
-
-
-            finished = true;
-
-
-            cleanup();
-
-
-            reject(
-              new Error(
-                "หมดเวลารอ Google Apps Script"
-              )
-            );
-
-          },
-          timeoutMs
-        );
-
-
-      window[callbackName] =
-        function(data) {
-
-          if (finished) {
-            return;
-          }
-
-
-          finished = true;
-
-
-          clearTimeout(
-            timer
-          );
-
-
-          cleanup();
-
-
-          resolve(
-            data
-          );
-
-        };
-
-
-      const query =
-        new URLSearchParams({
-
-          ...params,
-
-          callback:
-            callbackName
-
-        });
-
-
-      script.src =
-        WEB_APP_URL +
-        "?" +
-        query.toString();
-
-
-      script.async =
-        true;
-
-
-      script.onerror =
-        function() {
-
-          if (finished) {
-            return;
-          }
-
-
-          finished = true;
-
-
-          clearTimeout(
-            timer
-          );
-
-
-          cleanup();
-
-
-          reject(
-            new Error(
-              "เชื่อมต่อ Google Apps Script ไม่สำเร็จ"
-            )
-          );
-
-        };
-
-
-      document.body.appendChild(
-        script
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   เสียง Barcode ซ้ำ
-   ========================================================= */
-
-function playAlertSound() {
-
-  try {
-
-    const AudioContext =
-      window.AudioContext ||
-      window.webkitAudioContext;
-
-
-    if (!AudioContext) {
-      return;
-    }
-
-
-    const audioContext =
-      new AudioContext();
-
-
-    const oscillator =
-      audioContext.createOscillator();
-
-
-    const gainNode =
-      audioContext.createGain();
-
-
-    oscillator.connect(
-      gainNode
-    );
-
-
-    gainNode.connect(
-      audioContext.destination
-    );
-
-
-    oscillator.type =
-      "square";
-
-
-    oscillator.frequency.value =
-      800;
-
-
-    gainNode.gain.value =
-      0.15;
-
-
-    oscillator.start();
-
-
-    setTimeout(
-      function() {
-
-        oscillator.stop();
-
-        audioContext.close();
-
-      },
-      350
-    );
-
-
-  } catch (error) {
-
-    console.log(
-      "ไม่สามารถเล่นเสียงเตือนได้",
-      error
-    );
-
+    return;
   }
 
-}
+  const parts = value.split("|");
 
+  document.getElementById("fullName").value =
+    parts[0] || "";
 
-/* =========================================================
-   เสียงสแกนสำเร็จ
-   ========================================================= */
-
-function playSuccessSound() {
-
-  try {
-
-    const AudioContext =
-      window.AudioContext ||
-      window.webkitAudioContext;
-
-
-    if (!AudioContext) {
-      return;
-    }
-
-
-    const audioContext =
-      new AudioContext();
-
-
-    const oscillator =
-      audioContext.createOscillator();
-
-
-    const gainNode =
-      audioContext.createGain();
-
-
-    oscillator.connect(
-      gainNode
-    );
-
-
-    gainNode.connect(
-      audioContext.destination
-    );
-
-
-    oscillator.type =
-      "sine";
-
-
-    oscillator.frequency.value =
-      1200;
-
-
-    gainNode.gain.value =
-      0.08;
-
-
-    oscillator.start();
-
-
-    setTimeout(
-      function() {
-
-        oscillator.stop();
-
-        audioContext.close();
-
-      },
-      120
-    );
-
-
-  } catch (error) {
-
-    console.log(
-      "ไม่สามารถเล่นเสียงได้",
-      error
-    );
-
-  }
-
+  document.getElementById("nickname").value =
+    parts[1] || "";
 }
 
 
@@ -950,222 +481,141 @@ function playSuccessSound() {
    เปิดกล้อง
    ========================================================= */
 
-openCamera.addEventListener(
-  "click",
-  startCamera
-);
+async function openCamera() {
 
+  const employee =
+    document.getElementById("employee").value;
 
-async function startCamera() {
+  if (!employee) {
 
-  if (isScanning) {
+    showResult(
+      "กรุณาเลือกพนักงานก่อนเปิดกล้อง",
+      "error"
+    );
+
     return;
   }
+
+
+  /* ถ้ามี Barcode เดิมอยู่
+     ให้ล้างก่อนเริ่มสแกนใหม่ */
+
+  document.getElementById("barcode").value = "";
+
+  document.getElementById("barcodeDisplay").style.display =
+    "none";
+
+
+  const reader =
+    document.getElementById("reader");
+
+  reader.style.display = "block";
+
+
+  document.getElementById("cameraButton").style.display =
+    "none";
+
+  document.getElementById("stopButton").style.display =
+    "block";
+
+
+  document.getElementById("cameraStatus").textContent =
+    "กำลังเปิดกล้อง...";
 
 
   try {
 
-    showStatus(
-      "กำลังเปิดกล้อง...",
-      "info"
-    );
-
-
-    scanner =
-      new ZXingBrowser
-        .BrowserMultiFormatReader();
+    codeReader =
+      new ZXingBrowser.BrowserMultiFormatReader();
 
 
     const devices =
-      await ZXingBrowser
-        .BrowserCodeReader
+      await ZXingBrowser.BrowserCodeReader
         .listVideoInputDevices();
 
 
-    if (
-      !devices ||
-      devices.length === 0
-    ) {
+    if (!devices || devices.length === 0) {
 
-      throw new Error(
-        "ไม่พบกล้อง"
+      throw new Error("ไม่พบกล้องในอุปกรณ์");
+
+    }
+
+
+    /* เลือกกล้องหลังเป็นหลัก */
+
+    const backCamera =
+      devices.find(device =>
+        /back|rear|environment|หลัง/i.test(
+          device.label || ""
+        )
       );
 
-    }
+
+    selectedDeviceId =
+      backCamera
+        ? backCamera.deviceId
+        : devices[devices.length - 1].deviceId;
 
 
-    /* เลือกกล้องหลัง */
-
-    let selectedDevice =
-      devices[
-        devices.length - 1
-      ];
+    cameraRunning = true;
 
 
-    for (
-      const device of devices
-    ) {
-
-      const label =
-        String(
-          device.label || ""
-        ).toLowerCase();
+    document.getElementById("cameraStatus").textContent =
+      "📷 กำลังสแกน...";
 
 
-      if (
-        label.includes("back") ||
-        label.includes("rear") ||
-        label.includes("environment")
-      ) {
+    await codeReader.decodeFromVideoDevice(
+      selectedDeviceId,
+      reader,
+      (result, error) => {
 
-        selectedDevice =
-          device;
+        if (result) {
 
-        break;
+          const text =
+            result.getText();
 
-      }
+          /* =========================================
+             ได้ Barcode แล้ว
+             หยุดกล้องทันที
+             ========================================= */
 
-    }
-
-
-    /* ปลดล็อกสำหรับการสแกนรอบใหม่ */
-
-    scanLocked =
-      false;
+          document.getElementById("barcode").value =
+            text;
 
 
-    isScanning =
-      true;
+          document.getElementById("barcodeDisplay").textContent =
+            "📦 " + text;
+
+          document.getElementById("barcodeDisplay").style.display =
+            "block";
 
 
-    openCamera.style.display =
-      "none";
+          stopCamera();
 
 
-    stopCamera.style.display =
-      "block";
-
-
-    showStatus(
-      "📷 กำลังสแกน...\n" +
-      "เมื่ออ่านได้แล้วกล้องจะล็อกทันที",
-      "info"
-    );
-
-
-    scannerControls =
-      await scanner.decodeFromVideoDevice(
-
-        selectedDevice.deviceId,
-
-        video,
-
-        function(result, error) {
-
-          if (
-            result &&
-            !scanLocked
-          ) {
-
-            handleScanResult(
-              result.getText()
-            );
-
-          }
+          showResult(
+            "✅ สแกนสำเร็จ: " + text,
+            "success"
+          );
 
         }
 
-      );
-
+      }
+    );
 
   } catch (error) {
 
-    console.error(
-      error
-    );
+    console.error(error);
 
+    stopCamera();
 
-    isScanning =
-      false;
-
-
-    openCamera.style.display =
-      "block";
-
-
-    stopCamera.style.display =
-      "none";
-
-
-    showStatus(
+    showResult(
       "❌ ไม่สามารถเปิดกล้องได้: " +
-      error.message,
+      (error.message || error),
       "error"
     );
 
   }
-
-}
-
-
-/* =========================================================
-   สแกนสำเร็จ
-   สแกน 1 ครั้ง → กล้องหยุดทันที
-   ========================================================= */
-
-function handleScanResult(text) {
-
-  if (scanLocked) {
-    return;
-  }
-
-
-  text =
-    String(
-      text || ""
-    ).trim();
-
-
-  if (!text) {
-    return;
-  }
-
-
-  /* ล็อกทันที */
-
-  scanLocked =
-    true;
-
-
-  /* ใส่ Barcode */
-
-  showBarcode(
-    text
-  );
-
-
-  /* เสียง */
-
-  playSuccessSound();
-
-
-  /* ปิดกล้อง */
-
-  stopCameraFunction();
-
-
-  /* แสดงข้อความ */
-
-  showStatus(
-    "🔒 สแกนสำเร็จ กล้องถูกล็อกแล้ว\n" +
-    "เลขพัสดุ: " +
-    text +
-    "\nกรุณากดบันทึกข้อมูล",
-    "success"
-  );
-
-
-  barcode.focus();
 
 }
 
@@ -1174,123 +624,85 @@ function handleScanResult(text) {
    ปิดกล้อง
    ========================================================= */
 
-stopCamera.addEventListener(
-  "click",
-  stopCameraFunction
-);
+function stopCamera() {
 
-
-function stopCameraFunction() {
-
-  try {
-
-    if (
-      scannerControls &&
-      typeof scannerControls.stop ===
-      "function"
-    ) {
-
-      scannerControls.stop();
-
-    }
-
-  } catch (error) {
-
-    console.error(
-      error
-    );
-
-  }
+  cameraRunning = false;
 
 
   try {
 
-    if (video.srcObject) {
-
-      const tracks =
-        video.srcObject
-          .getTracks();
-
-
-      tracks.forEach(
-        function(track) {
-
-          track.stop();
-
-        }
-      );
-
-
-      video.srcObject =
-        null;
-
+    if (codeReader) {
+      codeReader.reset();
     }
 
   } catch (error) {
 
-    console.error(
-      error
-    );
+    console.log(error);
 
   }
 
 
-  scannerControls =
-    null;
+  codeReader = null;
 
 
-  scanner =
-    null;
+  const reader =
+    document.getElementById("reader");
+
+  reader.innerHTML = "";
+  reader.style.display = "none";
 
 
-  isScanning =
-    false;
-
-
-  openCamera.style.display =
+  document.getElementById("cameraButton").style.display =
     "block";
 
-
-  stopCamera.style.display =
+  document.getElementById("stopButton").style.display =
     "none";
+
+
+  document.getElementById("cameraStatus").textContent =
+    "กล้องปิดแล้ว — กดเปิดกล้องเพื่อสแกนพัสดุถัดไป";
 
 }
 
 
 /* =========================================================
-   บันทึกข้อมูล
+   แสดงข้อความ
    ========================================================= */
 
-saveButton.addEventListener(
-  "click",
-  saveData
-);
+function showResult(message, type) {
+
+  const box =
+    document.getElementById("result");
+
+  box.textContent = message;
+
+  box.className = type;
+
+  box.style.display = "block";
+
+}
 
 
-async function saveData() {
+/* =========================================================
+   บันทึก Barcode
+   ========================================================= */
 
-  const selected =
-    employee.value.split("|");
-
+function saveBarcode() {
 
   const fullName =
-    selected[0] || "";
+    document.getElementById("fullName").value.trim();
 
+  const nickname =
+    document.getElementById("nickname").value.trim();
 
-  const nick =
-    selected[1] || "";
+  const barcode =
+    document.getElementById("barcode").value.trim();
 
-
-  const code =
-    barcode.value.trim();
-
-
-  /* ตรวจชื่อ */
 
   if (!fullName) {
 
-    showStatus(
-      "❌ กรุณาเลือกผู้สแกน",
+    showResult(
+      "❌ กรุณาเลือกพนักงาน",
       "error"
     );
 
@@ -1299,210 +711,224 @@ async function saveData() {
   }
 
 
-  /* ตรวจ Barcode */
+  if (!barcode) {
 
-  if (!code) {
-
-    showStatus(
+    showResult(
       "❌ กรุณาสแกนหรือกรอก Barcode",
       "error"
     );
 
-    barcode.focus();
-
     return;
 
   }
 
 
-  /* ปุ่มกำลังบันทึก */
+  const button =
+    document.getElementById("saveButton");
 
-  saveButton.disabled =
-    true;
+  button.disabled = true;
+
+  button.textContent =
+    "⏳ กำลังบันทึก...";
 
 
-  saveButton.textContent =
-    "กำลังบันทึก...";
-
-
-  showStatus(
-    "กำลังบันทึกข้อมูล...",
-    "info"
+  showResult(
+    "กำลังตรวจสอบข้อมูล...",
+    "warning"
   );
 
 
-  try {
+  /* =====================================================
+     JSONP
+     ===================================================== */
 
-    /* ส่งข้อมูลไป Apps Script */
-
-    const result =
-      await jsonp({
-
-        action:
-          "save",
-
-        fullName:
-          fullName,
-
-        nickname:
-          nick,
-
-        barcode:
-          code
-
-      });
+  const callbackName =
+    "saveCallback_" +
+    Date.now() +
+    "_" +
+    Math.floor(Math.random() * 100000);
 
 
-    saveButton.disabled =
-      false;
+  const script =
+    document.createElement("script");
 
 
-    saveButton.textContent =
-      "💾 บันทึกลง Google Sheet";
+  let finished = false;
 
 
-    /* =========================
-       บันทึกสำเร็จ
-       ========================= */
+  window[callbackName] =
+    function(data) {
 
-    if (
-      result &&
-      result.success === true
-    ) {
-
-      showStatus(
-        "✅ บันทึกสำเร็จ\n" +
-        "เลขพัสดุ: " +
-        code,
-        "success"
-      );
+      finished = true;
 
 
-      resultBox.style.display =
-        "block";
+      try {
+
+        if (data && data.duplicate) {
+
+          showResult(
+            "⚠️ Barcode นี้มีอยู่ในระบบแล้ว: " +
+            barcode,
+            "warning"
+          );
+
+          return;
+
+        }
 
 
-      resultBox.textContent =
-        "บันทึกแล้ว: " +
-        result.barcode;
+        if (data && data.success) {
+
+          showResult(
+            "✅ บันทึกสำเร็จ: " +
+            data.barcode,
+            "success"
+          );
 
 
-      /* ล้าง Barcode */
+          /* แสดง Barcode ที่บันทึก */
 
-      barcode.value =
-        "";
-
-
-      /* โหลดประวัติ */
-
-      loadHistory();
+          document.getElementById(
+            "barcodeDisplay"
+          ).textContent =
+            "📦 " + data.barcode;
 
 
-      barcode.focus();
+          document.getElementById(
+            "barcodeDisplay"
+          ).style.display =
+            "block";
 
-    }
+
+          /* ล้างช่อง Barcode
+             เพื่อเตรียมรายการใหม่ */
+
+          document.getElementById(
+            "barcode"
+          ).value = "";
 
 
-    /* =========================
-       Barcode ซ้ำ
-       ========================= */
+          /* โหลดประวัติใหม่ */
 
-    else if (
-      result &&
-      result.duplicate
-    ) {
+          loadHistory();
 
-      showStatus(
-        "⚠️ Barcode ซ้ำ!\n" +
-        "เลขพัสดุ: " +
-        code +
-        "\nรายการนี้มีอยู่ในระบบแล้ว",
+
+        } else {
+
+          showResult(
+            "❌ " +
+            (
+              data && data.message
+                ? data.message
+                : "ไม่สามารถบันทึกข้อมูลได้"
+            ),
+            "error"
+          );
+
+        }
+
+      } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+          "💾 บันทึกข้อมูล";
+
+
+        delete window[callbackName];
+
+
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+
+      }
+
+    };
+
+
+  const url =
+    GAS_URL +
+    "?action=save" +
+    "&fullName=" +
+    encodeURIComponent(fullName) +
+    "&nickname=" +
+    encodeURIComponent(nickname) +
+    "&barcode=" +
+    encodeURIComponent(barcode) +
+    "&callback=" +
+    encodeURIComponent(callbackName);
+
+
+  script.src = url;
+
+
+  script.onerror =
+    function() {
+
+      if (finished) return;
+
+
+      finished = true;
+
+
+      showResult(
+        "❌ เชื่อมต่อ Google Apps Script ไม่สำเร็จ",
         "error"
       );
 
 
-      playAlertSound();
+      button.disabled = false;
+
+      button.textContent =
+        "💾 บันทึกข้อมูล";
 
 
-      alert(
-        "⚠️ Barcode ซ้ำ!\n\n" +
-        "เลขพัสดุ: " +
-        code +
-        "\n\n" +
-        "รายการนี้มีอยู่ใน Google Sheet แล้ว"
-      );
+      delete window[callbackName];
 
 
-      barcode.value =
-        "";
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+    };
 
 
-      barcode.focus();
-
-    }
+  document.body.appendChild(script);
 
 
-    /* =========================
-       Error
-       ========================= */
+  /* Timeout */
 
-    else {
+  setTimeout(function() {
 
-      showStatus(
-        "❌ " +
-        (
-          result &&
-          result.message
-            ? result.message
-            : "บันทึกไม่สำเร็จ"
-        ),
-        "error"
-      );
-
-    }
+    if (finished) return;
 
 
-  } catch (error) {
-
-    saveButton.disabled =
-      false;
+    finished = true;
 
 
-    saveButton.textContent =
-      "💾 บันทึกลง Google Sheet";
-
-
-    showStatus(
-      "❌ เกิดข้อผิดพลาด: " +
-      error.message,
+    showResult(
+      "❌ การเชื่อมต่อใช้เวลานานเกินไป",
       "error"
     );
 
-  }
 
-}
+    button.disabled = false;
+
+    button.textContent =
+      "💾 บันทึกข้อมูล";
 
 
-/* =========================================================
-   กด Enter เพื่อบันทึก
-   ========================================================= */
+    delete window[callbackName];
 
-barcode.addEventListener(
-  "keydown",
-  function(event) {
 
-    if (
-      event.key === "Enter"
-    ) {
-
-      event.preventDefault();
-
-      saveData();
-
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
     }
 
-  }
-);
+  }, 15000);
+
+}
 
 
 /* =========================================================
@@ -1511,193 +937,214 @@ barcode.addEventListener(
 
 function loadHistory() {
 
-  jsonp({
-
-    action:
-      "history",
-
-    limit:
-      "20"
-
-  })
-
-  .then(
-    function(result) {
-
-      if (
-        !result ||
-        !result.success
-      ) {
-
-        historyBox.innerHTML =
-          "❌ ไม่สามารถโหลดข้อมูลได้";
-
-        return;
-
-      }
+  const history =
+    document.getElementById("history");
 
 
-      const items =
-        result.items || [];
+  history.innerHTML =
+    "กำลังโหลดข้อมูล...";
 
 
-      if (
-        items.length === 0
-      ) {
-
-        historyBox.innerHTML =
-          "ยังไม่มีรายการสแกน";
-
-        return;
-
-      }
+  const callbackName =
+    "historyCallback_" +
+    Date.now() +
+    "_" +
+    Math.floor(Math.random() * 100000);
 
 
-      historyBox.innerHTML =
-        "";
+  const script =
+    document.createElement("script");
 
 
-      items.forEach(
-        function(item) {
+  let finished = false;
+
+
+  window[callbackName] =
+    function(data) {
+
+      finished = true;
+
+
+      try {
+
+        if (!data || !data.success) {
+
+          history.innerHTML =
+            "❌ โหลดข้อมูลไม่สำเร็จ";
+
+          return;
+
+        }
+
+
+        const items =
+          data.items || [];
+
+
+        if (items.length === 0) {
+
+          history.innerHTML =
+            "ยังไม่มีข้อมูล";
+
+          return;
+
+        }
+
+
+        history.innerHTML =
+          "";
+
+
+        items.forEach(function(item) {
 
           const div =
-            document.createElement(
-              "div"
-            );
-
+            document.createElement("div");
 
           div.className =
             "history-item";
 
 
-          const barcodeDiv =
-            document.createElement(
-              "div"
-            );
+          const barcode =
+            document.createElement("div");
 
-
-          barcodeDiv.className =
+          barcode.className =
             "history-barcode";
 
-
-          barcodeDiv.textContent =
-            "📦 " +
-            item.barcode;
+          barcode.textContent =
+            "📦 " + item.barcode;
 
 
-          const nameDiv =
-            document.createElement(
-              "div"
-            );
+          const info =
+            document.createElement("div");
 
+          info.className =
+            "history-info";
 
-          nameDiv.className =
-            "history-name";
-
-
-          nameDiv.textContent =
-            "👤 " +
-            item.fullName +
-            " (" +
-            (
-              item.nickname ||
-              "-"
-            ) +
-            ")";
-
-
-          const timeDiv =
-            document.createElement(
-              "div"
-            );
-
-
-          timeDiv.className =
-            "history-time";
-
-
-          timeDiv.textContent =
-            "🕐 " +
+          info.textContent =
             item.date +
             " " +
-            item.time;
+            item.time +
+            " | " +
+            item.fullName +
+            (
+              item.nickname
+                ? " (" + item.nickname + ")"
+                : ""
+            );
 
 
-          div.appendChild(
-            barcodeDiv
-          );
+          div.appendChild(barcode);
+
+          div.appendChild(info);
+
+          history.appendChild(div);
+
+        });
 
 
-          div.appendChild(
-            nameDiv
-          );
+      } finally {
+
+        delete window[callbackName];
 
 
-          div.appendChild(
-            timeDiv
-          );
-
-
-          historyBox.appendChild(
-            div
-          );
-
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
         }
-      );
 
-    }
-  )
+      }
 
-  .catch(
-    function(error) {
+    };
 
-      historyBox.innerHTML =
+
+  const url =
+    GAS_URL +
+    "?action=history" +
+    "&limit=20" +
+    "&callback=" +
+    encodeURIComponent(callbackName);
+
+
+  script.src = url;
+
+
+  script.onerror =
+    function() {
+
+      if (finished) return;
+
+
+      finished = true;
+
+
+      history.innerHTML =
         "❌ โหลดข้อมูลไม่สำเร็จ";
 
-      console.error(
-        error
-      );
 
+      delete window[callbackName];
+
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+    };
+
+
+  document.body.appendChild(script);
+
+
+  setTimeout(function() {
+
+    if (finished) return;
+
+
+    finished = true;
+
+
+    history.innerHTML =
+      "❌ โหลดข้อมูลไม่สำเร็จ";
+
+
+    delete window[callbackName];
+
+
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
     }
-  );
+
+  }, 15000);
 
 }
 
 
 /* =========================================================
-   เมื่อเปิดหน้าเว็บ
+   กด Enter ในช่อง Barcode
+   ========================================================= */
+
+document
+  .getElementById("barcode")
+  .addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+
+      event.preventDefault();
+
+      saveBarcode();
+
+    }
+
+  });
+
+
+/* =========================================================
+   โหลดประวัติเมื่อเปิดหน้าเว็บ
    ========================================================= */
 
 window.addEventListener(
   "load",
   function() {
 
-    const selected =
-      employee.value.split("|");
-
-
-    nickname.textContent =
-      selected[1] || "-";
-
-
     loadHistory();
-
-
-    barcode.focus();
-
-  }
-);
-
-
-/* =========================================================
-   ก่อนออกจากหน้า
-   ========================================================= */
-
-window.addEventListener(
-  "beforeunload",
-  function() {
-
-    stopCameraFunction();
 
   }
 );
